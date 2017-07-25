@@ -1,15 +1,15 @@
 import * as express from 'express';
+import { Customer } from '../models/customer';
+import { CustomerService } from '../services/customer-service';
 
-export function getCustomers(req: express.Request, res: express.Response) {
-    let result = [{
-        id: 1,
-        name: 'John Smith',
-        address: 'Downtown Montreal'
-    }, {
-        id: 2,
-        name: 'Tiger Woods',
-        address: 'New York'
-    }];
+export class CustomerRoute {
+    public constructor(private customerService: CustomerService) {
+    }
 
-    res.json(result);
+    public getCustomers(req: express.Request, res: express.Response): void {
+        let id = req.params['id'];
+        console.log(id);
+        let customers = this.customerService.getCustomers();
+        res.json(customers);
+    }
 }
