@@ -3,13 +3,15 @@ import { Customer } from '../models/customer';
 import { CustomerService } from '../services/customer-service';
 
 export class CustomerRoute {
-    public constructor(private customerService: CustomerService) {
+    private customerService: CustomerService;
+
+    public constructor(customerService: CustomerService) {
+        this.customerService = customerService;
     }
 
-    public getCustomers(req: express.Request, res: express.Response): void {
+    public getCustomers = (req: express.Request, res: express.Response): void => {
         let id = req.params['id'];
-        console.log(id);
         let customers = this.customerService.getCustomers();
         res.json(customers);
-    }
+    };
 }

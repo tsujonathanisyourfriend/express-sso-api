@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "declaration": false,
+        "outDir": "./js",
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
