@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
 
-# js files
+# js and map files
 **/*.js
+**/*.map
