@@ -1,17 +1,16 @@
 import * as express from 'express';
-import { Customer } from '../models/customer';
-import { CustomerService } from '../services/customer-service';
+import { ICustomerService } from '../services/customer-service';
 
-export class CustomerRoute {
-    private customerService: CustomerService;
+export interface ICustomerRoute {
+    getCustomers(req: express.Request, res: express.Response): void;
+}
 
-    public constructor(customerService: CustomerService) {
-        this.customerService = customerService;
-    }
-
+export class CustomerRoute implements ICustomerRoute {
+    public constructor(private customerService: ICustomerService) { }
+                                                
     public getCustomers = (req: express.Request, res: express.Response): void => {
         let id = req.params['id'];
-        let customers = this.customerService.getCustomers();
+        let customers = this.customerService.getCustomers(+id);
         res.json(customers);
     };
 }

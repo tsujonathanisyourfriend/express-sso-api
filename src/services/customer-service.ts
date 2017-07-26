@@ -1,8 +1,13 @@
 import { Customer } from '../models/customer';
+import * as _ from 'lodash';
 
-export class CustomerService {
-    public getCustomers(): Array<Customer> {
-        let result = [{
+export interface ICustomerService {
+    getCustomers(id?: number): Array<Customer>;
+}
+
+export class CustomerService implements ICustomerService {
+    public getCustomers(id?: number): Array<Customer> {
+        let allCustomers = [{
             id: 1,
             name: 'John Smith',
             address: 'Downtown Montreal'
@@ -11,6 +16,12 @@ export class CustomerService {
             name: 'Tiger Woods',
             address: 'New York'
         }];
-        return result;
+
+        if (id === undefined) {
+            return allCustomers;
+        }
+
+        let result = _.find(allCustomers, p => p.id === id);
+        return [result];
     }
 }
