@@ -23,7 +23,7 @@ export class CustomerRoute implements ICustomerRoute {
         // return the information including token as JSON
         res.json({
             success: true,
-            message: 'Enjoy your token!',
+            message: 'Enjoy your token!!!',
             token: token
         });
     };
