@@ -9,8 +9,11 @@ export class CustomerRoute implements ICustomerRoute {
     public constructor(private customerService: ICustomerService) { }
                                                 
     public getCustomers = (req: express.Request, res: express.Response): void => {
-        let id = req.params['id'];
-        let customers = this.customerService.getCustomers(+id);
-        res.json(customers);
+        //console.log('Router level middleware. Time:', Date.now());
+
+        const id = req.params['id'];
+        this.customerService.getCustomers(+id).then(p=>{
+            res.json(p);
+        });
     };
 }
