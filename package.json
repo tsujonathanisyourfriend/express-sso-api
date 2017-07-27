@@ -9,8 +9,10 @@
   "author": "Hong Xu",
   "license": "ISC",
   "dependencies": {
+    "@types/jsonwebtoken": "^7.2.2",
     "@types/morgan": "^1.7.32",
     "express": "^4.15.3",
+    "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
     "mongoose": "^4.11.4",
     "morgan": "^1.8.2"
