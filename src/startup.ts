@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as morgan from 'morgan';
 import * as core from "express-serve-static-core";
+import * as jwt from 'jsonwebtoken';
 import { ICustomerRoute, CustomerRoute } from './routes/customer-route';
 import { ICustomerService, CustomerService } from './services/customer-service';
 import { CustomerRepository } from './repositories/customer-repository';
@@ -35,10 +36,46 @@ export class StartUp {
         const customerRepository: CustomerRepository = new CustomerRepository();
         const customerService: ICustomerService = new CustomerService(customerRepository);
         const customerRoute: ICustomerRoute = new CustomerRoute(customerService);
-        this.app.get('/customers/:id', customerRoute.getCustomers);
-        this.app.get('/authenticate', customerRoute.authenticate);        
+        this.app.get('/api/customers/:id', customerRoute.getCustomers);
+        this.app.get('/authenticate', customerRoute.authenticate);
     }
 
     private setupJWTProtection(): void {
+        var self = this;
+
+        const apiRoutes: core.Router = express.Router();
+        
+        // route middleware to verify a token
+        apiRoutes.use(function (req, res, next) {
+
+            // check header or url parameters or post parameters for token
+            const token = !!req.headers['x-access-token'] ? req.headers['x-access-token'].toString() : undefined;
+
+            // decode token
+            if (token) {
+                // verifies secret and checks exp
+                jwt.verify(token, 'superSecret', function (err, decoded) {
+                    if (err) {
+                        return res.json({ success: false, message: 'Failed to authenticate token.' });
+                    } else {
+                        // if everything is good, save to request for use in other routes
+                        // req.decoded = decoded;
+                        next();
+                    }
+                });
+
+            } else {
+                // if there is no token
+                // return an error
+                return res.status(403).send({
+                    success: false,
+                    message: 'No token provided.'
+                });
+
+            }
+        });
+
+        // apply the routes to our application with the prefix /api
+        this.app.use('/api', apiRoutes);
     }
 }
