@@ -18,7 +18,14 @@ export class StartUp {
     public init() {
         this.app.use(morgan('dev'));
 
-        this.setupJWTProtection();
+        //this.setupJWTProtection();
+
+        this.app.use((req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+            next();
+        });
 
         this.setupRoutes();
 
@@ -37,16 +44,14 @@ export class StartUp {
         const customerService: ICustomerService = new CustomerService(customerRepository);
         const customerRoute: ICustomerRoute = new CustomerRoute(customerService);
         this.app.get('/api/customers/:id', customerRoute.getCustomers);
-        this.app.get('/authenticate', customerRoute.authenticate);
+        this.app.get('/authenticate', customerRoute.login);
     }
 
     private setupJWTProtection(): void {
-        var self = this;
-
         const apiRoutes: core.Router = express.Router();
-        
+
         // route middleware to verify a token
-        apiRoutes.use(function (req, res, next) {
+        apiRoutes.use(function (req: express.Request, res: express.Response, next: express.NextFunction) {
 
             // check header or url parameters or post parameters for token
             const token = !!req.headers['x-access-token'] ? req.headers['x-access-token'].toString() : undefined;

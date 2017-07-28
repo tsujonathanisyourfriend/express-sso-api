@@ -4,7 +4,8 @@ import { ICustomerService } from '../services/customer-service';
 
 export interface ICustomerRoute {
     getCustomers(req: express.Request, res: express.Response): void;
-    authenticate(req: express.Request, res: express.Response): void;
+    login(req: express.Request, res: express.Response): void;
+    validateToken(req: express.Request, res: express.Response): void;
 }
 
 export class CustomerRoute implements ICustomerRoute {
@@ -17,7 +18,7 @@ export class CustomerRoute implements ICustomerRoute {
         });
     };
 
-    public authenticate = (req: express.Request, res: express.Response): void => {
+    public login = (req: express.Request, res: express.Response): void => {
         var token = jwt.sign('user', 'superSecret');
 
         // return the information including token as JSON
@@ -27,4 +28,7 @@ export class CustomerRoute implements ICustomerRoute {
             token: token
         });
     };
+
+    public validateToken = (req: express.Request, res: express.Response): void => {
+    }
 }
