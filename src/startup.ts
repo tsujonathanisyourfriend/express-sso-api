@@ -18,14 +18,9 @@ export class StartUp {
     public init() {
         this.app.use(morgan('dev'));
 
-        //this.setupJWTProtection();
+        this.setupCORS();
 
-        this.app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
-            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            next();
-        });
+        this.setupJWTProtection();
 
         this.setupRoutes();
 
@@ -39,20 +34,26 @@ export class StartUp {
         });
     }
 
-    private setupRoutes(): void {
-        const customerRepository: CustomerRepository = new CustomerRepository();
-        const customerService: ICustomerService = new CustomerService(customerRepository);
-        const customerRoute: ICustomerRoute = new CustomerRoute(customerService);
-        this.app.get('/api/customers/:id', customerRoute.getCustomers);
-        this.app.get('/authenticate', customerRoute.login);
+    private setupCORS(): void {
+        var allowCrossDomain = function (req, res, next) {
+            res.header('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-access-token');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+
+            // intercept OPTIONS method
+            if ('OPTIONS' == req.method) {
+                res.send(200); 
+            }
+            else {
+                next();
+            }
+        };
+
+        this.app.use(allowCrossDomain);
     }
 
     private setupJWTProtection(): void {
-        const apiRoutes: core.Router = express.Router();
-
-        // route middleware to verify a token
-        apiRoutes.use(function (req: express.Request, res: express.Response, next: express.NextFunction) {
-
+        var protectApi = function(req: express.Request, res: express.Response, next: express.NextFunction) {
             // check header or url parameters or post parameters for token
             const token = !!req.headers['x-access-token'] ? req.headers['x-access-token'].toString() : undefined;
 
@@ -76,11 +77,23 @@ export class StartUp {
                     success: false,
                     message: 'No token provided.'
                 });
+            }            
+        };
 
-            }
-        });
+        const apiRoutes: core.Router = express.Router();
+
+        // route middleware to verify a token
+        apiRoutes.use(protectApi);
 
         // apply the routes to our application with the prefix /api
         this.app.use('/api', apiRoutes);
+    }
+
+    private setupRoutes(): void {
+        const customerRepository: CustomerRepository = new CustomerRepository();
+        const customerService: ICustomerService = new CustomerService(customerRepository);
+        const customerRoute: ICustomerRoute = new CustomerRoute(customerService);
+        this.app.get('/api/customers/:id', customerRoute.getCustomers);
+        this.app.get('/authenticate', customerRoute.login);
     }
 }
