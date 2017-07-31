@@ -2,6 +2,8 @@ import * as express from 'express';
 import * as morgan from 'morgan';
 import * as core from "express-serve-static-core";
 import * as jwt from 'jsonwebtoken';
+import * as https from 'https';
+import * as fs from 'fs';
 import { ICustomerRoute, CustomerRoute } from './routes/customer-route';
 import { ICustomerService, CustomerService } from './services/customer-service';
 import { CustomerRepository } from './repositories/customer-repository';
@@ -16,6 +18,11 @@ export class StartUp {
     }
 
     public init() {
+        https.createServer({
+            key: fs.readFileSync('key.pem'),
+            cert: fs.readFileSync('cert.pem')
+        }, this.app).listen(3000);
+
         this.app.use(morgan('dev'));
 
         this.setupCORS();
@@ -29,9 +36,9 @@ export class StartUp {
             res.status(500).send('Something broke!');
         });
 
-        this.app.listen(this.port, function () {
-            console.log('Running on PORT: ' + this.port);
-        });
+        // this.app.listen(this.port, function () {
+        //     console.log('Running on PORT: ' + this.port);
+        // });
     }
 
     private setupCORS(): void {
