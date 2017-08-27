@@ -1,4 +1,4 @@
-Documentation is in the file, "NodeJS JWT POC.docx".
+Please see the file, "NodeJS JWT POC.docx", for more details.
 
 JWT and express web service
 https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
